@@ -49,6 +49,8 @@ MonoBehaviour:
   - OnLifeChange
   - Shoot
   - RotatePlayer
+  - Loose
+  - Win
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

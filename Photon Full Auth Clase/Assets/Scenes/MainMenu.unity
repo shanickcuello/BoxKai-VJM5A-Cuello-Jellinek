@@ -1018,7 +1018,7 @@ MonoBehaviour:
     type: 3}
   controllerPrefab: {fileID: 8614236899587851086, guid: 43040ac3496b21a42a3ccb8d0427b252,
     type: 3}
-  roomName: 17
+  roomName: 29
 --- !u!4 &2061879366
 Transform:
   m_ObjectHideFlags: 0

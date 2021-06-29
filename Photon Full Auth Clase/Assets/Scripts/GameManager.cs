@@ -6,9 +6,8 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     bool ongameStarts;
-
+    public GameObject winScreen, looseScreen;
     public bool OngameStarts { get => ongameStarts; }
-
     LimitPlatform limitPlatform;
 
     private void Start()

@@ -8,6 +8,12 @@ public class CharacterFA : MonoBehaviourPun
 {
     Player playerId;
 
+    public GameObject winpanel, loosepanel;
+
+    GameManager gameManager;
+
+    Rigidbody rb;
+    PhotonView pv;
     [SerializeField] float speedMovement;
     [SerializeField] GameObject bulletSpawnPosition;
 
@@ -19,23 +25,110 @@ public class CharacterFA : MonoBehaviourPun
     public MeshFilter planeAim;
     SpawnPositionManager spawnPositionManager;
 
+    public bool alive;
+
     private void Start()
     {
+        gameManager = FindObjectOfType<GameManager>();
+        alive = true;
+        pv = GetComponent<PhotonView>();
+        rb = GetComponent<Rigidbody>();
         spawnPositionManager = FindObjectOfType<SpawnPositionManager>();
         camera = Camera.main;
         planeAim = FindObjectOfType<AimPlane>().GetComponent<MeshFilter>();
         lookAtPoint = FindObjectOfType<LookAtPoint>().gameObject;
     }
 
+    private void Update()
+    {
+        CheckAlive();
+        CheckWin();
+        
+        
+    }
+
+    public void CheckWin()
+    {
+        CharacterFA[] characters = FindObjectsOfType<CharacterFA>();
+
+        int playersDeads = 0;
+
+        foreach (var item in characters)
+        {
+            if (!item.alive)
+            {
+                playersDeads++;
+            }
+        }
+
+        if (playersDeads > 2)
+        {
+            if (alive)
+            {
+                ShowWin();
+            }
+            else
+            {
+                ShowLoose();
+            }
+        }
+
+    }
+
+    private void CheckAlive()
+    {
+        if (pv.IsMine)
+        {
+            if (life <= 0 && alive)
+            {
+                alive = false;
+                rb.isKinematic = true;
+                rb.velocity = Vector3.zero;
+                rb.mass = 0;
+                rb.constraints = 0;
+                rb.freezeRotation = true;
+                rb.constraints = 
+                rb.constraints = RigidbodyConstraints.FreezeAll;
+                DeadPosition deadPosition = FindObjectOfType<DeadPosition>();
+
+                Vector3 randomPosition = new Vector3(deadPosition.transform.position.x,
+                    deadPosition.transform.position.y,
+                    deadPosition.transform.position.z + Random.Range(-8, 9));
+
+                transform.position = randomPosition;
+            }
+        }
+
+
+    }
+
+    internal void ShowWin()
+    {
+        winpanel.SetActive(true);
+    }
+
+    internal void ShowLoose()
+    {
+        loosepanel.SetActive(true);
+    }
 
     public void Move(Vector3 dir)
     {
+        if (!alive)
+        {
+            return;
+        }
         transform.position += dir * speedMovement * Time.deltaTime;
     }
 
     public void RotateMe()
     {
-        if (planeAim != null)
+        if (!alive)
+        {
+            return;
+        }
+
+        if (planeAim != null && pv.IsMine)
         {
 
             var plane = new Plane(planeAim.transform.position,
@@ -67,6 +160,10 @@ public class CharacterFA : MonoBehaviourPun
 
     public void Shoot()
     {
+        if (!alive)
+        {
+            return;
+        }
         PhotonNetwork.Instantiate(bulletPrefab.name, bulletSpawnPosition.transform.position, transform.rotation)
                      .GetComponent<BulletDisc>()
                      .SetOwner(this);
@@ -89,28 +186,32 @@ public class CharacterFA : MonoBehaviourPun
 
     public void TakeDamage(int dmg)
     {
+        if (!alive)
+        {
+            return;
+        }
         life -= dmg;
 
-        if (life <= 0)
-        {
-            MyServer.Instance.PlayerDisconnect(playerId); // aca hacer que el player pierda pero no desconectarlo
-            photonView.RPC("DisconnectOwner", playerId);
-        }
-        else
-        {
-            photonView.RPC("OnLifeChange", playerId, life);
-        }
+        //if (life <= 0)
+        //{
+        //    MyServer.Instance.PlayerDisconnect(playerId); // aca hacer que el player pierda pero no desconectarlo
+        //    photonView.RPC("DisconnectOwner", playerId);
+        //}
+        //else
+        //{
+        //    photonView.RPC("OnLifeChange", playerId, life);
+        //}
     }
 
-    [PunRPC]
-    void DisconnectOwner()
-    {
-        PhotonNetwork.Disconnect();
-    }
+    //[PunRPC]
+    //void DisconnectOwner()
+    //{
+    //    PhotonNetwork.Disconnect();
+    //}
 
-    [PunRPC]
-    void OnLifeChange(int life)
-    {
-        this.life = life;
-    }
+    //[PunRPC]
+    //void OnLifeChange(int life)
+    //{
+    //    this.life = life;
+    //}
 }

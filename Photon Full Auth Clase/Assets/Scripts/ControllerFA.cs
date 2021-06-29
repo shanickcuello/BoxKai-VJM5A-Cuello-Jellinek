@@ -39,6 +39,13 @@ public class ControllerFA : MonoBehaviourPun
         if (PhotonNetwork.PlayerList.Length < 5)
             return;
         RequestMovement();
+        CheckLooseAndWin();
+    }
+
+    private void CheckLooseAndWin()
+    {
+        MyServer.Instance.RequestLoose(playerId);
+        MyServer.Instance.RequestWin(playerId);
     }
 
     private void RequestMovement()
@@ -48,7 +55,7 @@ public class ControllerFA : MonoBehaviourPun
 
         if (h != 0 || v != 0)
         {
-            var dir = new Vector3(-h, 0, -v).normalized;
+            var dir = new Vector3(h, 0, v).normalized;
             MyServer.Instance.RequestMove(playerId, dir);
         }
 

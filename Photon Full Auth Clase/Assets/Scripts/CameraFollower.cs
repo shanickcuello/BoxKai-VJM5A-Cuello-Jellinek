@@ -14,7 +14,10 @@ public class CameraFollower : MonoBehaviour
 
     private void Update()
     {
-        transform.LookAt(target.transform.position);
+        if (target != null)
+        {
+            transform.LookAt(target.transform.position);
+        }
     }
 
 
