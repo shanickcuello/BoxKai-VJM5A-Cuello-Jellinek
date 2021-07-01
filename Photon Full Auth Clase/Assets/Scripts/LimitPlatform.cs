@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +13,14 @@ public class LimitPlatform : MonoBehaviour
         anim = GetComponent<Animator>();
 
 
+    }
+
+    private void Update()
+    {
+        if (PhotonNetwork.PlayerList.Length > 4)
+        {
+            GetDown();
+        }
     }
 
     public void GetDown()

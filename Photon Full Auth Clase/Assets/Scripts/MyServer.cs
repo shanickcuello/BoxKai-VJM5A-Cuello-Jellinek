@@ -32,6 +32,53 @@ public class MyServer : MonoBehaviourPun
         }
     }
 
+    private void Update()
+    {
+        if (PhotonNetwork.PlayerList.Length > 4)
+        {
+            CheckPlayersAlive();
+        }
+    }
+
+    private void CheckPlayersAlive()
+    {
+        int playersDeads = 0;
+        
+        List<CharacterFA> characters = new List<CharacterFA>();
+        foreach (var item in playerModels)
+        {
+            characters.Add(item.Value);
+        }
+
+        foreach (var item in characters)
+        {
+            if (!item.alive)
+            {
+                playersDeads++;
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        if (playersDeads > 2)
+        {
+            foreach (var item in characters)
+            {
+                if (!item.alive)
+                {
+                    item.ShowLoose();
+                }
+                else
+                {
+                    item.ShowWin();
+                }
+            }
+        }
+
+    }
+
     [PunRPC]
     void SetServer(Player serverPlayer, int sceneIndex = 1)
     {
@@ -91,6 +138,16 @@ public class MyServer : MonoBehaviourPun
         photonView.RPC("Move", server, player, dir);
     }
 
+    public void RequestLoose(Player player)
+    {
+        photonView.RPC("Loose", server, player);
+    }
+
+    public void RequestWin(Player player)
+    {
+        photonView.RPC("Win", server, player);
+    }
+
     internal void RequestRotation(Player playerid)
     {
         photonView.RPC("RotatePlayer", server, playerid);
@@ -109,6 +166,25 @@ public class MyServer : MonoBehaviourPun
     }
 
     /* FUNCIONES DEL SERVER ORIGINAL QUE LE LLEGAN DEL AVATAR */
+    [PunRPC]
+    void Win(Player player)
+    {
+        if (playerModels.ContainsKey(player))
+        {
+            playerModels[player].CheckWin();
+        }
+    }
+
+    [PunRPC]
+    void Loose(Player player)
+    {
+        if (playerModels.ContainsKey(player))
+        {
+            playerModels[player].CheckWin();
+        }
+    }
+
+
     [PunRPC]
     void Move(Player player, Vector3 dir)
     {
