@@ -51,6 +51,8 @@ MonoBehaviour:
   - RotatePlayer
   - Loose
   - Win
+  - Aim
+  - UnableColl
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

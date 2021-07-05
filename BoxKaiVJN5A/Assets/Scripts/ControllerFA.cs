@@ -40,6 +40,13 @@ public class ControllerFA : MonoBehaviourPun
             return;
         RequestMovement();
         CheckLooseAndWin();
+        RequestAim();
+    }
+
+    private void RequestAim()
+    {
+        Debug.Log("Se llama al request aim");
+        MyServer.Instance.RequestAim(playerId ,Input.mousePosition);
     }
 
     private void CheckLooseAndWin()
@@ -63,16 +70,10 @@ public class ControllerFA : MonoBehaviourPun
 
     private void Update()
     {
-        Aim();
         if (PhotonNetwork.PlayerList.Length < 5)
             return;
         Shoot();
         Reloading();
-    }
-
-    private void Aim()
-    {
-        MyServer.Instance.RequestRotation(playerId);
     }
 
     float AngleBetweenTwoPoints(Vector3 a, Vector3 b) => Mathf.Atan2(a.y - b.y, a.x - b.x) * Mathf.Rad2Deg;

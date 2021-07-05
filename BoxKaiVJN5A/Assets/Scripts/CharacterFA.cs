@@ -43,8 +43,8 @@ public class CharacterFA : MonoBehaviourPun
     {
         CheckAlive();
         CheckWin();
-        
-        
+
+
     }
 
     public void CheckWin()
@@ -81,6 +81,8 @@ public class CharacterFA : MonoBehaviourPun
         {
             if (life <= 0 && alive)
             {
+                MyServer.Instance.RequestUnableColl(playerId);
+                GetComponent<Collider>().enabled = false;
                 alive = false;
                 rb.isKinematic = true;
                 rb.velocity = Vector3.zero;
@@ -99,6 +101,11 @@ public class CharacterFA : MonoBehaviourPun
         }
 
 
+    }
+
+    public void UnableCollider()
+    {
+        GetComponent<Collider>().enabled = false;
     }
 
     internal void ShowWin()
@@ -120,7 +127,8 @@ public class CharacterFA : MonoBehaviourPun
         transform.position += dir * speedMovement * Time.deltaTime;
     }
 
-    public void RotateMe()
+
+    public void RotateMe(Vector3 mousePosition)
     {
         if (!alive)
         {
@@ -131,12 +139,12 @@ public class CharacterFA : MonoBehaviourPun
         {
 
             var plane = new Plane(planeAim.transform.position,
-           planeAim.transform.position +
-           planeAim.transform.forward,
-           planeAim.transform.position +
-           planeAim.transform.right);
+            planeAim.transform.position +
+            planeAim.transform.forward,
+            planeAim.transform.position +
+            planeAim.transform.right);
 
-            var ray = camera.ScreenPointToRay(Input.mousePosition);
+            var ray = camera.ScreenPointToRay(mousePosition);
 
             if (!plane.Raycast(ray, out var enter)) return;
 
@@ -185,6 +193,11 @@ public class CharacterFA : MonoBehaviourPun
 
     public void TakeDamage(int dmg)
     {
+        if (life <= 1)
+        {
+            GetComponent<Collider>().enabled = false;
+        }
+
         if (!alive)
         {
             return;

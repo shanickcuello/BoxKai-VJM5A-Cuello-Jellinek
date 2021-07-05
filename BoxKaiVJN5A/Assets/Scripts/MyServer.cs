@@ -79,6 +79,8 @@ public class MyServer : MonoBehaviourPun
 
     }
 
+    
+
     [PunRPC]
     void SetServer(Player serverPlayer, int sceneIndex = 1)
     {
@@ -105,6 +107,8 @@ public class MyServer : MonoBehaviourPun
             photonView.RPC("AddPlayer", server, playerLocal);
         }
     }
+
+    
 
     [PunRPC]
     void AddPlayer(Player player)
@@ -138,6 +142,11 @@ public class MyServer : MonoBehaviourPun
         photonView.RPC("Move", server, player, dir);
     }
 
+    internal void RequestUnableColl(Player playerId)
+    {
+        photonView.RPC("UnableColl", server, playerId);
+    }
+
     public void RequestLoose(Player player)
     {
         photonView.RPC("Loose", server, player);
@@ -148,10 +157,6 @@ public class MyServer : MonoBehaviourPun
         photonView.RPC("Win", server, player);
     }
 
-    internal void RequestRotation(Player playerid)
-    {
-        photonView.RPC("RotatePlayer", server, playerid);
-    }
 
     public void RequestShoot(Player player)
     {
@@ -165,7 +170,35 @@ public class MyServer : MonoBehaviourPun
         _dicViews.Remove(player);
     }
 
+    internal void RequestAim(Player playerId, Vector3 mousePosition)
+    {
+        photonView.RPC("Aim", server, playerId, mousePosition);
+    }
+
     /* FUNCIONES DEL SERVER ORIGINAL QUE LE LLEGAN DEL AVATAR */
+
+    [PunRPC]
+    void UnableColl(Player player)
+    {
+        if (playerModels.ContainsKey(player))
+        {
+            playerModels[player].UnableCollider();
+        }
+    }
+
+
+    [PunRPC]
+    void Aim(Player player, Vector3 mousePosition)
+    {
+        if (playerModels.ContainsKey(player))
+        {
+            Debug.Log("se llama al pun de AIM");
+            playerModels[player].RotateMe(mousePosition);
+        }
+    }
+
+
+
     [PunRPC]
     void Win(Player player)
     {
@@ -192,15 +225,6 @@ public class MyServer : MonoBehaviourPun
         {
             playerModels[player].Move(dir);
             _dicViews[player].SetVel(dir.magnitude);
-        }
-    }
-
-    [PunRPC]
-    void RotatePlayer(Player player)
-    {
-        if (playerModels.ContainsKey(player))
-        {
-            playerModels[player].RotateMe();
         }
     }
 
