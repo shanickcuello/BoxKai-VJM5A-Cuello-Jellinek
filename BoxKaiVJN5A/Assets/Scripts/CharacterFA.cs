@@ -87,7 +87,6 @@ public class CharacterFA : MonoBehaviourPun
                 rb.mass = 0;
                 rb.constraints = 0;
                 rb.freezeRotation = true;
-                rb.constraints = 
                 rb.constraints = RigidbodyConstraints.FreezeAll;
                 DeadPosition deadPosition = FindObjectOfType<DeadPosition>();
 
